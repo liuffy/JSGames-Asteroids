@@ -17,11 +17,21 @@ const MovingObject = function(options){
       this.radius, //radius,
       0, // start angle,
       2 * Math.PI, // we want full circle
-      true // flips it (doesn't matter) 
+      true // clockwise (true) vs anticlockwise( false)(doesn't matter)
     )
   }
 
-  MovingObject.prototype.move = function(){
-
+  const MS_PER_FRAME= 1000/60;
+  MovingObject.prototype.move = function(timePassed){
+     //timeDelta is number of milliseconds since last move
+     //if the computer is busy the time delta will be larger
+     //in this case the MovingObject should move farther in this frame
+     //velocity of object is how far it should move in 1/60th of a second
+    const velocityScale = timePassed / MS_PER_FRAME
+    deltaX = this.vel[0] * velocityScale;
+    deltaY = this.vel[1] * velocityScale;
+    this.pos = [this.pos[0] + deltaX, this.pos[1] + deltaY]
   }
 }
+
+module.exports = MovingObject;
