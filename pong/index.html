@@ -12,13 +12,13 @@
     ph=100; // pad height
     bx=by=50;
     bd=8;
-    xv=yv=6; // ball velocity
+    xv=yv=5; // ball velocity
     score1=score2=0;
     aiSpeed = 2;
     window.onload=function(){
       canvas=document.getElementById("canvas");
       ctx=canvas.getContext('2d');
-      setInterval(update, 1000/30); // calls update 30 times a sec
+      setInterval(update, 1000/50); // calls update 30 times a sec
       canvas.addEventListener('mousemove', function(e){
         pad1y = e.clientY-ph/2; //returns the vertical coordinate within the application's client area
       });
@@ -67,9 +67,9 @@
       }
       // AI
       if (aipadY+ph/2<by){ // if the position of the ball is higher than the upper half of the paddle
-        aipadY+=aiSpeed;
+        aipadY+=aiSpeed; // move upwards
       } else {
-        aipadY-=aiSpeed;
+        aipadY-=aiSpeed; // move downwards
       }
 
       // Draw canvas
