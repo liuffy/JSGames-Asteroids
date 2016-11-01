@@ -1,27 +1,45 @@
-const Game = require("./game.js")
-const Ship = require("./ship.js")
-// GameView
-//
-// Your GameView class will be responsible for keeping track of the
-// canvas context, the game, and the ship. Your GameView will be in
-// charge of setting an interval to animate your game. In addition, it
-// will eventually bind key handlers to the ship so that we can move it
-// around.
-//
+const GameView = function (game, ctx) {
+  this.game = game;
+  this.ctx = ctx;
+  // this.ship = this.game.addShip();
+};
 
-// Define an GameView class in lib/game_view.js. The GameView should
-// store a Game and take in and store a drawing ctx.
-  const GameView = function(game, ctx){
-    this.game = game;
-    this.ctx = ctx;
-  }
+// GameView.MOVES = {
+//   "w": [ 0, -1],
+//   "a": [-1,  0],
+//   "s": [ 0,  1],
+//   "d": [ 1,  0],
+// };
+//
+// GameView.prototype.bindKeyHandlers = function () {
+//   const ship = this.ship;
+//
+//   Object.keys(GameView.MOVES).forEach((k) => {
+//     let move = GameView.MOVES[k];
+//     key(k, function () { ship.power(move); });
+//   });
+//
+//   key("space", function () { ship.fireBullet() });
+// };
 
 // Write a GameView.prototype.start method. It should call setInterval
 // to call Game.prototype.moveObjects and Game.prototype.draw once every
 // 20ms or so.
-  GameView.prototype.start = function(){
-    setInterval(Game.prototype.moveObjects(), 20);
-    setInterval(Game.prototype.draw(), 20);
-  }
+GameView.prototype.start = function(){
+  let that = this
+  setInterval(game.draw, 20);
+  setInterval(that.game.moveObjects, 20);
+}
 
-  module.exports = GameView;
+// GameView.prototype.animate = function(time){
+//   const timeDelta = time - this.lastTime;
+//
+//   this.game.step(timeDelta);
+//   this.game.draw(this.ctx);
+//   this.lastTime = time;
+//
+//   //every call to animate requests causes another call to animate
+//   requestAnimationFrame(this.animate.bind(this));
+// };
+
+module.exports = GameView;

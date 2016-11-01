@@ -35,7 +35,7 @@ const MovingObject = function(options){
     const velocityScale = timeDelta / MS_PER_FRAME;
       deltaX = this.vel[0] * velocityScale;
       deltaY = this.vel[1] * velocityScale;
-      
+
     this.pos = [this.pos[0] + deltaX, this.pos[1] + deltaY]
   }
 

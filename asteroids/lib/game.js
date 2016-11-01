@@ -5,7 +5,6 @@
 // calling their corresponding move methods.
 //
 
-"use strict"
   const Asteroid = require("./asteroid");
   const Util = require("./util");
   const Bullet = require("./bullet");
@@ -14,7 +13,7 @@
   const Game = function(){
     this.bullets = [];
     this.ships = [];
-
+    this.asteorids = [];
     this.addAsteroids();
   }
   // Write an Game class in lib/game.js. Define the following constants on
@@ -39,7 +38,7 @@
     } else {
 	    	throw "What are you trying to do??";
 	  }
-  }
+  };
 
   Game.prototype.addAsteroids = function () {
     this.asteroids = [];
@@ -49,8 +48,11 @@
     }
   };
 
+// theyre not concatenating
   Game.prototype.allObjects = function(){
     return [].concat(this.ships, this.asteroids, this.bullets);
+
+    // this.asteroids is undefined
   };
 
   Game.prototype.draw = function(ctx){
@@ -64,6 +66,7 @@
   }
 
   Game.prototype.moveObjects = function (timePassed) {
+
     this.allObjects().forEach(object=>{
       object.move(timePassed);
     });
