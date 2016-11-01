@@ -70,7 +70,9 @@
 	//
 
 	  const Asteroid = __webpack_require__(2);
-	  const Util = __webpack_require__ (5);
+	  const Util = __webpack_require__(4);
+	  const Bullet = __webpack_require__(6);
+	  const Ship = __webpack_require__(5);
 
 	  const Game = function(){
 	    this.asteroids = [];
@@ -83,28 +85,28 @@
 	  Game.DIM_X = 1000; // dimensions of screen
 	  Game.DIM_Y = 600;
 	  Game.NUM_ASTEROIDS = 15;
-	  Game.BG_COLOR = "#081f45";
+	  Game.BGKD_COLOR = "#081f45";
 
 	  // Write a Game.prototype.addAsteroids method. Randomly place the
 	  // asteroids within the dimensions of the game grid. You may also wish
 	  // to write a Game.prototype.randomPosition method. Store the asteroids
 	  // in an instance variable array asteroids.
-	  Game.prototype.addAsteroids = function(){
-	      for (let i = 0; i < Game.NUM_ASTEROIDS; i++){
-	        let asteroid = new Asteroid({pos: this.randomPosition(), game: this});
-	        this.add(asteroid); // Call addAsteroids in your constructor.
-	      }
-	  }
 
 	  Game.prototype.add = function(object){
 	    if (object instanceof Asteroid){
-	      this.asteroids.push(object)
+	      this.asteroids.push(object);
 	    } else if(object instanceof Bullet) {
-	      this.bullets.push(object)
+	      this.bullets.push(object);
 	    } else if(object instanceof Ship) {
-	      this.ships.push(object)
+	      this.ships.push(object);
 	    }
 	  }
+
+	  Game.prototype.addAsteroids = function () {
+	    for (var i = 0; i < Game.NUM_ASTEROIDS; i++) {
+	      this.add(new Asteroid({ game: this }));
+	    }
+	  };
 
 	  Game.prototype.randomPosition = function(){
 	    return [Game.DIM_X * Math.random(), Game.DIM_Y * Math.random()]
@@ -113,22 +115,27 @@
 	  // Write a Game.prototype.draw(ctx) method. It should call clearRect on
 	  // the ctx to wipe down the entire space. Call the draw method on each
 	  // of the asteroids.
+	  Game.prototype.allObjects = function(){
+	    return [].concat(this.ships, this.asteroids, this.bullets);
+	  };
+
 	  Game.prototype.draw = function(ctx){
-	    ctx.clearRect(0,0,Game.DIM_X, Game.DIM_Y);
+	    ctx.clearRect(0,0,Game.DIM_X, Game.DIM_Y); // wipes down the entire space
 	    ctx.fillStyle(Game.BGKD_COLOR);
 	    ctx.fillRect(0,0,Game.DIM_X, Game.DIM_Y);
-	    this.asteroids.forEach((asteroid)=>{
-	      asteroid.draw(ctx);
+
+	    this.allObjects().forEach((object)=>{
+	      object.draw(ctx);
 	    })
 	  }
 
 	  // Write a Game.prototype.moveObjects method. It should call move on
 	  // each of the asteroids.
-	  Game.prototype.moveObjects = function(timePassed){
-	    this.asteroids.forEach((asteroid)=>{
-	      asteroid.move(timePassed);
+	  Game.prototype.moveObjects = function (timePassed) {
+	    this.allObjects().forEach((object)=>{
+	      object.move(timePassed);
 	    });
-	  }
+	  };
 
 	  module.exports = Game;
 
@@ -138,8 +145,8 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	  const MovingObject = __webpack_require__(3);
-	  const Ship = __webpack_require__(4);
-	  const Util = __webpack_require__(5);
+	  const Ship = __webpack_require__(5);
+	  const Util = __webpack_require__(4);
 	  const Bullet = __webpack_require__(6);
 
 	  const DEFAULTS = { // arbitrary default color and radius for Asteroids
@@ -147,6 +154,8 @@
 	    RADIUS: 20,
 	    SPEED: 4
 	  }
+
+
 	  const Asteroid = function(options={}){
 	    options.color = DEFAULTS.COLOR;
 	    options.radius = DEFAULTS.RADIUS;
@@ -155,6 +164,7 @@
 
 	    MovingObject.call(this, options)
 	  }
+	  Util.inherits(Asteroid, MovingObject); // Asteroid inherits from MovingObject
 	  // Return a randomly oriented vector with the given length.
 
 	module.exports = Asteroid;
@@ -162,20 +172,24 @@
 
 /***/ },
 /* 3 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
+
+	const Util = __webpack_require__(4);
 
 	const MovingObject = function(options){
-	  this.pos = options.pos
-	  this.vel = options.vel
-	  this.radius = options.radius
-	  this.color = options.color
+	  this.pos = options.pos;
+	  this.vel = options.vel;
+	  this.radius = options.radius;
+	  this.color = options.color;
+	  this.game = options.game;
+	};
 
 	// Similiar to Circle.prototype.render for the "Drunken circle" demo
 	  MovingObject.prototype.draw = function(ctx){
 	    // Draw a circle of the appropriate radius centered at pos
 	    // Fill the circle with the appropriate color
 	    ctx.fillStyle = this.color;
-	    ctx.beginPath();
+	    ctx.beginPath(); // begins path/resets current path
 
 	    ctx.arc(
 	      this.pos[0], // x coord,
@@ -185,6 +199,7 @@
 	      2 * Math.PI, // we want full circle
 	      true // clockwise (true) vs anticlockwise( false)(doesn't matter)
 	    )
+	    ctx.fill();
 	  }
 
 	  const MS_PER_FRAME= 1000/60;
@@ -193,12 +208,12 @@
 	     //if the computer is busy the time delta will be larger
 	     //in this case the MovingObject should move farther in this frame
 	     //velocity of object is how far it should move in 1/60th of a second
-	    const velocityScale = timePassed / MS_PER_FRAME
+	    const velocityScale = timePassed / MS_PER_FRAME;
 	    deltaX = this.vel[0] * velocityScale;
 	    deltaY = this.vel[1] * velocityScale;
 	    this.pos = [this.pos[0] + deltaX, this.pos[1] + deltaY]
 	  }
-	}
+
 
 	module.exports = MovingObject;
 
@@ -207,15 +222,23 @@
 /* 4 */
 /***/ function(module, exports) {
 
-	
-
-/***/ },
-/* 5 */
-/***/ function(module, exports) {
-
 	const Util = {
+	  dir (vec) {
+	  var norm = Util.norm(vec);
+	  return Util.scale(vec, 1 / norm);
+	},
+	// Find distance between two points.
+	dist (pos1, pos2) {
+	  return Math.sqrt(
+	    Math.pow(pos1[0] - pos2[0], 2) + Math.pow(pos1[1] - pos2[1], 2)
+	  );
+	},
+	// Find the length of the vector.
+	norm (vec) {
+	  return Util.dist([0, 0], vec);
+	},
 	  inherits (childClass, parentClass){
-	    function Surrogate(){ this.constructor = ChildClass}
+	    function Surrogate(){ this.constructor = childClass}
 	    Surrogate.prototype = parentClass.prototype;
 	    childClass.prototype = new Surrogate();
 	  },
@@ -235,6 +258,12 @@
 
 
 /***/ },
+/* 5 */
+/***/ function(module, exports) {
+
+	
+
+/***/ },
 /* 6 */
 /***/ function(module, exports) {
 
@@ -245,7 +274,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	const Game = __webpack_require__(1)
-	const Ship = __webpack_require__(4)
+	const Ship = __webpack_require__(5)
 	// GameView
 	//
 	// Your GameView class will be responsible for keeping track of the
