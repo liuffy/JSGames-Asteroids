@@ -1,3 +1,5 @@
+"use strict"
+
 const Util = {
 
   // dir (vec) {
@@ -19,7 +21,7 @@ const Util = {
     function Surrogate(){ this.constructor = ChildClass;}
     Surrogate.prototype = ParentClass.prototype;
     ChildClass.prototype = new Surrogate();
-  }, // there's commas because this is an object, not a class 
+  }, // there's commas because this is an object, not a class
 
   randomVec (length) {
     const deg = 2 * Math.PI * Math.random();

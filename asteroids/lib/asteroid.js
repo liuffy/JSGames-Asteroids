@@ -1,3 +1,4 @@
+
   const MovingObject = require("./moving_object");
   const Ship = require("./ship");
   const Util = require("./util");
@@ -17,7 +18,7 @@
     options.vel = options.vel || Util.randomVec(DEFAULTS.SPEED)
 
     MovingObject.call(this, options)
-  }
+  };
   Util.inherits(Asteroid, MovingObject); // Asteroid inherits from MovingObject
   // Return a randomly oriented vector with the given length.
 

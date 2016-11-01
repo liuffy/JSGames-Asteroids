@@ -44,6 +44,7 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
+	"use strict"
 	const Game = __webpack_require__(1);
 	const GameView = __webpack_require__(7);
 
@@ -52,10 +53,10 @@
 	  canvas.width = Game.DIM_X;
 	  canvas.height = Game.DIM_Y;
 
-	  const ctx = canvas.getContext("2d");
-	  const game = new Game();
-	  new GameView(game, ctx).start();
-	})
+	  const ctx = canvas.getContext("2d"); // specifiying "2d" leads to the creation of a 2D rendering context
+	  const gamey = new Game();
+	  new GameView(gamey, ctx).start();
+	});
 
 
 /***/ },
@@ -69,15 +70,16 @@
 	// calling their corresponding move methods.
 	//
 
+	"use strict"
 	  const Asteroid = __webpack_require__(2);
 	  const Util = __webpack_require__(4);
 	  const Bullet = __webpack_require__(6);
 	  const Ship = __webpack_require__(5);
 
 	  const Game = function(){
-	    this.asteroids = [];
 	    this.bullets = [];
 	    this.ships = [];
+
 	    this.addAsteroids();
 	  }
 	  // Write an Game class in lib/game.js. Define the following constants on
@@ -95,26 +97,23 @@
 	  Game.prototype.add = function(object){
 	    if (object instanceof Asteroid){
 	      this.asteroids.push(object);
-	    } else if(object instanceof Bullet) {
+	    } else if (object instanceof Bullet) {
 	      this.bullets.push(object);
-	    } else if(object instanceof Ship) {
+	    } else if (object instanceof Ship) {
 	      this.ships.push(object);
-	    }
+	    } else {
+		    	throw "What are you trying to do??";
+		  }
 	  }
 
 	  Game.prototype.addAsteroids = function () {
-	    for (var i = 0; i < Game.NUM_ASTEROIDS; i++) {
+	    this.asteroids = [];
+
+	    for (let i = 0; i < Game.NUM_ASTEROIDS; i++) {
 	      this.add(new Asteroid({ game: this }));
 	    }
 	  };
 
-	  Game.prototype.randomPosition = function(){
-	    return [Game.DIM_X * Math.random(), Game.DIM_Y * Math.random()]
-	  }
-
-	  // Write a Game.prototype.draw(ctx) method. It should call clearRect on
-	  // the ctx to wipe down the entire space. Call the draw method on each
-	  // of the asteroids.
 	  Game.prototype.allObjects = function(){
 	    return [].concat(this.ships, this.asteroids, this.bullets);
 	  };
@@ -124,18 +123,28 @@
 	    ctx.fillStyle(Game.BGKD_COLOR);
 	    ctx.fillRect(0,0,Game.DIM_X, Game.DIM_Y);
 
-	    this.allObjects().forEach((object)=>{
+	    this.allObjects().forEach(object=>{
 	      object.draw(ctx);
 	    })
 	  }
 
-	  // Write a Game.prototype.moveObjects method. It should call move on
-	  // each of the asteroids.
 	  Game.prototype.moveObjects = function (timePassed) {
-	    this.allObjects().forEach((object)=>{
+	    this.allObjects().forEach(object=>{
 	      object.move(timePassed);
 	    });
 	  };
+
+	  Game.prototype.randomPosition = function(){
+	    return [Game.DIM_X * Math.random(), Game.DIM_Y * Math.random()];
+	  }
+
+	  // Write a Game.prototype.draw(ctx) method. It should call clearRect on
+	  // the ctx to wipe down the entire space. Call the draw method on each
+	  // of the asteroids.
+
+
+	  // Write a Game.prototype.moveObjects method. It should call move on
+	  // each of the asteroids.
 
 	  module.exports = Game;
 
@@ -144,6 +153,7 @@
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
+	
 	  const MovingObject = __webpack_require__(3);
 	  const Ship = __webpack_require__(5);
 	  const Util = __webpack_require__(4);
@@ -163,7 +173,7 @@
 	    options.vel = options.vel || Util.randomVec(DEFAULTS.SPEED)
 
 	    MovingObject.call(this, options)
-	  }
+	  };
 	  Util.inherits(Asteroid, MovingObject); // Asteroid inherits from MovingObject
 	  // Return a randomly oriented vector with the given length.
 
@@ -188,7 +198,6 @@
 	  MovingObject.prototype.draw = function(ctx){
 	    // Draw a circle of the appropriate radius centered at pos
 	    // Fill the circle with the appropriate color
-	    ctx.fillStyle = this.color;
 	    ctx.beginPath(); // begins path/resets current path
 
 	    ctx.arc(
@@ -199,18 +208,20 @@
 	      2 * Math.PI, // we want full circle
 	      true // clockwise (true) vs anticlockwise( false)(doesn't matter)
 	    )
+	    ctx.fillStyle = this.color;
 	    ctx.fill();
 	  }
 
 	  const MS_PER_FRAME= 1000/60;
-	  MovingObject.prototype.move = function(timePassed){
+	  MovingObject.prototype.move = function(timeDelta){
 	     //timeDelta is number of milliseconds since last move
 	     //if the computer is busy the time delta will be larger
 	     //in this case the MovingObject should move farther in this frame
 	     //velocity of object is how far it should move in 1/60th of a second
-	    const velocityScale = timePassed / MS_PER_FRAME;
-	    deltaX = this.vel[0] * velocityScale;
-	    deltaY = this.vel[1] * velocityScale;
+	    const velocityScale = timeDelta / MS_PER_FRAME;
+	      deltaX = this.vel[0] * velocityScale;
+	      deltaY = this.vel[1] * velocityScale;
+	      
 	    this.pos = [this.pos[0] + deltaX, this.pos[1] + deltaY]
 	  }
 
@@ -222,26 +233,30 @@
 /* 4 */
 /***/ function(module, exports) {
 
+	"use strict"
+
 	const Util = {
-	  dir (vec) {
-	  var norm = Util.norm(vec);
-	  return Util.scale(vec, 1 / norm);
-	},
-	// Find distance between two points.
-	dist (pos1, pos2) {
-	  return Math.sqrt(
-	    Math.pow(pos1[0] - pos2[0], 2) + Math.pow(pos1[1] - pos2[1], 2)
-	  );
-	},
-	// Find the length of the vector.
-	norm (vec) {
-	  return Util.dist([0, 0], vec);
-	},
-	  inherits (childClass, parentClass){
-	    function Surrogate(){ this.constructor = childClass}
-	    Surrogate.prototype = parentClass.prototype;
-	    childClass.prototype = new Surrogate();
-	  },
+
+	  // dir (vec) {
+	  // var norm = Util.norm(vec);
+	  // return Util.scale(vec, 1 / norm);
+	  // },
+	  // // Find distance between two points.
+	  // dist (pos1, pos2) {
+	  //   return Math.sqrt(
+	  //     Math.pow(pos1[0] - pos2[0], 2) + Math.pow(pos1[1] - pos2[1], 2)
+	  //   );
+	  // },
+	  // // Find the length of the vector.
+	  // norm (vec) {
+	  //   return Util.dist([0, 0], vec);
+	  // },
+	  //
+	  inherits (ChildClass, ParentClass){
+	    function Surrogate(){ this.constructor = ChildClass;}
+	    Surrogate.prototype = ParentClass.prototype;
+	    ChildClass.prototype = new Surrogate();
+	  }, // there's commas because this is an object, not a class
 
 	  randomVec (length) {
 	    const deg = 2 * Math.PI * Math.random();

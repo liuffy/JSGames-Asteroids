@@ -5,15 +5,16 @@
 // calling their corresponding move methods.
 //
 
+"use strict"
   const Asteroid = require("./asteroid");
   const Util = require("./util");
   const Bullet = require("./bullet");
   const Ship = require("./ship");
 
   const Game = function(){
-    this.asteroids = [];
     this.bullets = [];
     this.ships = [];
+
     this.addAsteroids();
   }
   // Write an Game class in lib/game.js. Define the following constants on
@@ -31,26 +32,23 @@
   Game.prototype.add = function(object){
     if (object instanceof Asteroid){
       this.asteroids.push(object);
-    } else if(object instanceof Bullet) {
+    } else if (object instanceof Bullet) {
       this.bullets.push(object);
-    } else if(object instanceof Ship) {
+    } else if (object instanceof Ship) {
       this.ships.push(object);
-    }
+    } else {
+	    	throw "What are you trying to do??";
+	  }
   }
 
   Game.prototype.addAsteroids = function () {
-    for (var i = 0; i < Game.NUM_ASTEROIDS; i++) {
+    this.asteroids = [];
+
+    for (let i = 0; i < Game.NUM_ASTEROIDS; i++) {
       this.add(new Asteroid({ game: this }));
     }
   };
 
-  Game.prototype.randomPosition = function(){
-    return [Game.DIM_X * Math.random(), Game.DIM_Y * Math.random()]
-  }
-
-  // Write a Game.prototype.draw(ctx) method. It should call clearRect on
-  // the ctx to wipe down the entire space. Call the draw method on each
-  // of the asteroids.
   Game.prototype.allObjects = function(){
     return [].concat(this.ships, this.asteroids, this.bullets);
   };
@@ -60,17 +58,27 @@
     ctx.fillStyle(Game.BGKD_COLOR);
     ctx.fillRect(0,0,Game.DIM_X, Game.DIM_Y);
 
-    this.allObjects().forEach((object)=>{
+    this.allObjects().forEach(object=>{
       object.draw(ctx);
     })
   }
 
-  // Write a Game.prototype.moveObjects method. It should call move on
-  // each of the asteroids.
   Game.prototype.moveObjects = function (timePassed) {
-    this.allObjects().forEach((object)=>{
+    this.allObjects().forEach(object=>{
       object.move(timePassed);
     });
   };
+
+  Game.prototype.randomPosition = function(){
+    return [Game.DIM_X * Math.random(), Game.DIM_Y * Math.random()];
+  }
+
+  // Write a Game.prototype.draw(ctx) method. It should call clearRect on
+  // the ctx to wipe down the entire space. Call the draw method on each
+  // of the asteroids.
+
+
+  // Write a Game.prototype.moveObjects method. It should call move on
+  // each of the asteroids.
 
   module.exports = Game;
