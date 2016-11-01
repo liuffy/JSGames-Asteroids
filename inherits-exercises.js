@@ -10,11 +10,11 @@
 //* Why is it necessary to set the prototype constructor?
 
 // Without setting the prototype constructor, the copy is not an instance
-// of the subclass (Dog), but rather the superClass (Animal).
+// of the subclass (Dog), but rather the baseClass (Animal).
 
-  Function.prototype.inherits = function(superClass){
+  Function.prototype.inherits = function(baseClass){
     function Surrogate(){}
-    Surrogate.prototype = superClass.prototype;
+    Surrogate.prototype = baseClass.prototype;
     this.prototype = new Surrogate(); // "this" points to the subclass
     this.prototype.constructor = this;
   }
