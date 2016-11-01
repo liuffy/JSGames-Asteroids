@@ -1,80 +1,88 @@
-      <!DOCTYPE html>
-      <html>
-        <head>
-      <title>Welcome to Pong</title>
-      </head>
-      <body>
-          <canvas id="canvas" width="500" height="400"></canvas>
-          <script>
-          pad1y=pad2y=40; // only need to define Y because they stay in place
-          // horizontall
-          pt=10;// pad thickness
-          ph=100; // pad height
-          bx=by=50;
-          bd=6;
-          xv=yv=4; // ball velocity
-          score1=score2=0;
-          aiSpeed = 2;
-          window.onload=function(){
-            canvas=document.getElementById("canvas");
-            ctx=canvas.getContext('2d');
-            setInterval(update, 1000/30); // calls update 30 times a sec
-            canvas.addEventListener('mousemove', function(e){
-              pad1y = e.clientY-ph/2; //returns the vertical coordinate within the application's client area
-            });
-          }
+<!DOCTYPE html>
+<html>
+  <head>
+<title>Welcome to Pong</title>
+</head>
+<body>
+    <canvas id="canvas" width="600" height="380"></canvas>
+    <script>
+    pad1y=pad2y=40; // only need to define Y because they stay in place
+    // horizontall
+    pt=10;// pad thickness
+    ph=100; // pad height
+    bx=by=50;
+    bd=6;
+    xv=yv=6; // ball velocity
+    score1=score2=0;
+    aiSpeed = 2;
+    window.onload=function(){
+      canvas=document.getElementById("canvas");
+      ctx=canvas.getContext('2d');
+      setInterval(update, 1000/30); // calls update 30 times a sec
+      canvas.addEventListener('mousemove', function(e){
+        pad1y = e.clientY-ph/2; //returns the vertical coordinate within the application's client area
+      });
+    }
 
-          function reset(){
-            bx=canvas.width/2; // center ball
-            by=canvas.height/2;
-            xy=-xv;
-            yv=3;
-          }
-          function update(){
-            bx+= xv; // x velocity
-            by+= yv; // y velocity
+    function reset(){
+      bx=canvas.width/2; // center ball
+      by=canvas.height/2;
+      xy=-xv;
+      yv=3;
+    }
+    function update(){
+      bx+= xv; // x velocity
+      by+= yv; // y velocity
 
-            if (by<0 && yv<0 || by>canvas.height && yv>0){ // bounce back up
-              yv=-yv; // reverse y velocity
-            }
+      if (by<0 && yv<0 || by>canvas.height && yv>0){ // bounce back up
+        yv=-yv; // reverse y velocity
+      }
 
-            // sides
-            if (bx<0){ // left
-              if(by>pad1y && by<pad1y+ph){ // is left paddle between top and bottom of paddle
-                xv=-xv; // if it is, we can bounce it
-                dy=by-(pad1y+ph/2); //deltaY
-                yv +=dy*0.3;
-              } else {
-                  score2++;
-                  reset();
-              }
-            }
-            if (bx>canvas.width){ // right paddle
-              if(by>pad2y && by<pad2y+ph){
-                xv=-xv;
-                dy=by-(pad2y+ph/2);
-                yv +=dy*0.3;
-              } else {
-                  score1++;
-                  reset();
-              }
-            }
-            // AI
-            if (pad2y+ph/2<by){
-              pad2y+=aiSpeed;
-            } else {
-              pad2y-=aiSpeed;
-            }
-            // Draw canvas
-            ctx.fillStyle ='black';
-            ctx.fillRect(0,0,canvas.width, canvas.height); // dimensions of rectangle
-            ctx.fillStyle ='white';
-            ctx.fillRect(0, pad1y, pt, ph);
-            ctx.fillRect(canvas.width-pt, pad2y, pt, ph)
-            ctx.fillRect(bx-bd/2, by-bd/2, bd, bd)
-            ctx.fillText(score1,100,100)
-            ctx.fillText(score2,canvas.width-100,100)
-          }
-          </script>
-        </body>
-      </html>
+      // sides
+      if (bx<0){ // left
+        if(by>pad1y && by<pad1y+ph){ // is left paddle between top and bottom of paddle
+          xv=-xv; // if it is, we can bounce it
+          dy=by-(pad1y+ph/2); //deltaY
+          yv =dy*0.3;
+        } else {
+            score2++;
+            reset();
+        }
+      }
+      if (bx>canvas.width){ // right paddle
+        if(by>pad2y && by<pad2y+ph){
+          xv=-xv;
+          dy=by-(pad2y+ph/2);
+          yv =dy*0.3;
+        } else {
+            score1++;
+            reset();
+        }
+      }
+      // AI
+      if (pad2y+ph/2<by){
+        pad2y+=aiSpeed;
+      } else {
+        pad2y-=aiSpeed;
+      }
+      // Draw canvas
+      ctx.fillStyle ='black';
+      ctx.fillRect(0,0,canvas.width, canvas.height); // dimensions of rectangle
+      // Draw paddles
+
+      ctx.fillStyle ='white';
+      // paddle 1
+      ctx.fillRect(0, pad1y, pt, ph);
+      // paddle2
+      ctx.fillRect(canvas.width-pt, pad2y, pt, ph)
+
+      //ball
+      ctx.fillRect(bx-bd/2, by-bd/2, bd, bd)
+      // score 1
+      ctx.fillText(score1,100,100)
+      // score 2
+      ctx.fillText(score2,canvas.width-100,100)
+    }
+    </script>
+  </body>
+</html>
